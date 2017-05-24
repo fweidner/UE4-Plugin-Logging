@@ -34,10 +34,10 @@ public:
 			void writeTriggerLCT(const FString _name);
 		
 		UFUNCTION(BlueprintCallable, Category = "FileWriter")
-			void closeFile();
+			void CloseFile();
 
 		UFUNCTION(BlueprintCallable, Category = "FileWriter")
-			void setPath(FString _path);
+			void SetPath(FString _path);
 
 		UFUNCTION(BlueprintCallable, Category = "FileWriter")	
 			void openFile();

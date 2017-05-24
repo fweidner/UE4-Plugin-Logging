@@ -63,8 +63,8 @@ void UFileWriterProxy::writeTriggerLCT(const FString _name)
 	tmp.Append(FString("\tName: "));
 	tmp.Append(_name);
 
-	f->writeToFile(tmp);
-	f->writeNewLine();
+	f->WriteToFile(tmp);
+	f->WriteNewLine();
 }
 
 void UFileWriterProxy::writeLaneLCT(const FString _lane)
@@ -75,36 +75,36 @@ void UFileWriterProxy::writeLaneLCT(const FString _lane)
 	FString tmp;
 	tmp = "Change to lane: ";
 	tmp += _lane;
-	f->writeToFile(tmp);
-	f->writeNewLine();
+	f->WriteToFile(tmp);
+	f->WriteNewLine();
 }
 
 void UFileWriterProxy::writeDefaultString(const FString _string)
 {
 	if (!f) return;
 	f->writeTimestamp();
-	f->writeToFile(_string);
-	f->writeNewLine();
+	f->WriteToFile(_string);
+	f->WriteNewLine();
 }
 
 void UFileWriterProxy::startWriting()
 {
-	f->startWriting();
+	f->StartWriting();
 }
 
 void UFileWriterProxy::stopWriting()
 {
-	f->stopWriting();
+	f->StopWriting();
 }
 
-void UFileWriterProxy::closeFile() 
+void UFileWriterProxy::CloseFile() 
 {
 	f->closeFile();
 }
 
-void UFileWriterProxy::setPath(FString _path)
+void UFileWriterProxy::SetPath(FString _path)
 {
-	f->setPath(_path);
+	f->SetPath(_path);
 }
 
 void UFileWriterProxy::openFile()

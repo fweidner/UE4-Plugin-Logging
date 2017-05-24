@@ -5,6 +5,7 @@
 #include <Misc/DateTime.h> // get time and date for filename
 #include <atomic>
 
+#include "Runtime/Core/Public/HAL/ThreadingBase.h"
 #include "Engine.h"
 
 
@@ -20,33 +21,28 @@ public:
 	void openFile();
 	void closeFile();
 
-	void writeNewLine();
-	void writeToFile(const FString _value);
-	void writeToFile(const int _value);
-	void writeToFile(const float _value);
-	void writeToFile(const float a, const float b, const float c, const float d);
-	void writeToFile(const FVector value);
-	void writeToFile(const FRotator value);
-	void writeToFile(const FString _name, const FVector _position, const FRotator _orientation);
-	void writeToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed);
-	void writeToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed, const int _gear);
+	void WriteNewLine();
+	void WriteToFile(const FString _value);
+	void WriteToFile(const int _value);
+	void WriteToFile(const float _value);
+	void WriteToFile(const float a, const float b, const float c, const float d);
+	void WriteToFile(const FVector value);
+	void WriteToFile(const FRotator value);
+	void WriteToFile(const FString _name, const FVector _position, const FRotator _orientation);
+	void WriteToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed);
+	void WriteToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed, const int _gear);
 	bool isWriteEnabled(){	return bWrite; };
 	void writeTimestamp();
 
-	void startWriting();
-	void stopWriting();
+	void StartWriting();
+	void StopWriting();
 
-	void setPath(FString _path);
+	void SetPath(FString _path);
 
-	void setPlayerName(const FString _name);
-	void setEnvironment(const FString _env);
-
-	void setAtomicSteerValue(float _val);
-	void setAtomicAccelarteValue(float _val);
-
-
-	
-	void initFile();
+	void SetPlayerName(const FString _name);
+	void SetEnvironment(const FString _env);
+		
+	void InitFile(FString _playerName = "Galadriel", FString _condition = "Lothlorien"); //use only after  player name and enviornment/condition is set.
 
 private:
 
@@ -71,13 +67,11 @@ private:
 	FString PlayerName;
 	FString Environment;
 
-	/*
-	std::atomic_long steer;
-	std::atomic_long accelerate;
-	*/
 	float steer; 
 	float accelerate;
 	
+	FCriticalSection MyMutexWrite;
+
 	void createDirectory(FString _path);
 };
 

@@ -92,62 +92,44 @@ void FileWriter::openFile()
 	}
 }
 
-void FileWriter::setPath(FString _path)
+void FileWriter::SetPath(FString _path)
 {
 	Path = _path;
 }
 
-void FileWriter::setPlayerName(const FString _name)
+void FileWriter::SetPlayerName(const FString _name)
 {
 	PlayerName = _name;
 
 }
 
-void FileWriter::setEnvironment(const FString _env)
+void FileWriter::SetEnvironment(const FString _env)
 {
 	Environment = _env;
 }
 
-void FileWriter::setAtomicSteerValue(float _val)
+void FileWriter::InitFile(FString _playerName, FString _condition)
 {
-	steer = _val;
-	//UE_LOG(C2SLog, Log, TEXT("%f"), (float)steer);
-
-}
-
-void FileWriter::setAtomicAccelarteValue(float _val)
-{
-	accelerate = _val;
-}
-
-void FileWriter::initFile()
-{
-	writeToFile("Mae govannen.");
-	writeNewLine();
-	writeToFile("I'm a log.");
-	writeNewLine(); 
-	writeToFile("My structure:v Timestamp;L;X;Y;Z;Yaw;Pitch;Roll;km/h;gear;SteeringValue;AccelerationValue");
-	writeNewLine();
-	//writeToFile("Sometimes, i.e. when the player hits reaches a sign, lines are different.");
-	//writeNewLine();
-	//writeToFile("Then the line will have the following items: Trigger, Number, World-Position and a Name. ");
-	//writeNewLine();
-	writeToFile("Here are some meta information about this session: ");
-	writeNewLine();
-	writeToFile("Name: " + PlayerName);
-	//		writeNewLine();
-	//		writeToFile("Environment: " + Environment);
-	writeNewLine();
-
+	WriteToFile("Mae govannen.");
+	WriteNewLine();
+	WriteToFile("I'm a log.");
+	WriteNewLine();
+	WriteToFile("Here are some meta information about this session: ");
+	WriteNewLine();
+	PlayerName = _playerName;
+	WriteToFile("Name: " + PlayerName);
+	WriteNewLine();
+	Environment = _condition;
+	WriteToFile("Environment: " + Environment);
+	WriteNewLine();
 	FString date = FDateTime::Now().ToString();
+	WriteToFile("Now: " + date + ". Have a good day.");
 
-	writeToFile("Now: " + date + ". Have a good day.");
+	WriteNewLine();
 
-	writeNewLine();
-
-	writeToFile("Live long, and prosper.");
-	writeNewLine();
-	writeNewLine();
+	WriteToFile("Live long, and prosper.");
+	WriteNewLine();
+	WriteNewLine();
 }
 
 bool FileWriter::doesLoggingDirectoryExist(const FString _pathToCheck) const
@@ -160,6 +142,7 @@ bool FileWriter::isFileOpen(std::ofstream* _file)
 {
 	return _file->is_open();
 }
+
 
 void FileWriter::createDirectory(FString _path)
 {
@@ -175,23 +158,23 @@ void FileWriter::closeFile()
 
 	if (FileWriter::RefCount == 0)
 	{
-		writeNewLine();
-		writeToFile("Live long and prosper!");
-		writeNewLine();
+		WriteNewLine();
+		WriteToFile("Live long and prosper!");
+		WriteNewLine();
 
 		FString date = FDateTime::Now().ToString();
 
-		writeToFile("Fin. " + date + ". Have a good day.");
+		WriteToFile("Fin. " + date + ". Have a good day.");
 		Myfile.close();
 		UE_LOG(Car2IXSLog, Log, TEXT("Closed file."));
 	}
 	else if (FileWriter::RefCount > 0)
 	{
-		//UE_LOG(C2SLog, Log, TEXT("File still used by %d actors."), FileWriter::RefCount);
+		UE_LOG(Car2IXSLog, Log, TEXT("File still used by %d actors."), FileWriter::RefCount);
 	}
 	else
 	{
-		//UE_LOG(C2SLog, Log, TEXT("Something is really really wrong: %d actors."), FileWriter::RefCount);
+		UE_LOG(Car2IXSLog, Log, TEXT("Something is really really wrong: %d actors."), FileWriter::RefCount);
 	}
 }
 
@@ -201,119 +184,113 @@ FileWriter::~FileWriter()
 	closeFile();
 }
 
-/*
-* Writes position and orientation of the actor to the file. Finishes with a tab stop.
-*/
-void FileWriter::writeToFile(const FString _value)
+void FileWriter::WriteToFile(const FString _value)
 {
-	//write actor label, pos and orientation to file. data can be used for later analysis
+	FScopeLock Lock(&MyMutexWrite);
+	{
 
-	if (bWrite)
-		Myfile << std::string(TCHAR_TO_UTF8(*_value)).c_str() << ";";
+		if (bWrite)
+			Myfile << std::string(TCHAR_TO_UTF8(*_value)).c_str() << ";";
+	}
 }
 
-void FileWriter::writeToFile(const float _value)
+void FileWriter::WriteToFile(const float _value)
 {
-	if (bWrite)
-		Myfile << std::to_string(_value) << ";";
+	FScopeLock Lock(&MyMutexWrite);
+	{
+		if (bWrite)
+			Myfile << std::to_string(_value) << ";";
+	}
 }
 
-void FileWriter::writeToFile(const int _value)
+void FileWriter::WriteToFile(const int _value)
 {
-	if (bWrite)
-		Myfile << std::to_string(_value) << ";";
+	FScopeLock Lock(&MyMutexWrite);
+	{
+		if (bWrite)
+			Myfile << std::to_string(_value) << ";";
+	}
 }
 
-/**
-* Writes three or four floats. Finishes with a tab stop.
-*/
-void FileWriter::writeToFile(const float a, const float b, const float c, const float d = 0.f)
+void FileWriter::WriteToFile(const float a, const float b, const float c, const float d = 0.f)
 {
-	if (bWrite)
-		Myfile << a << ";" << b << ";" << c << ";" << d << ";";
+	FScopeLock Lock(&MyMutexWrite);
+	{
+		if (bWrite)
+			Myfile << a << ";" << b << ";" << c << ";" << d << ";";
+	}
 }
 
-/*
-* Writes a FVector (three values) to file. Usage is intended for 3D coordinates (positional values). Finishes with a tab stop.
-*/
-void FileWriter::writeToFile(const FVector value)
+void FileWriter::WriteToFile(const FVector value)
 {
-	if (bWrite)
-		Myfile << value.X << ";" << value.Y << ";" << value.Z << ";";
+	FScopeLock Lock(&MyMutexWrite);
+	{
+		if (bWrite)
+			Myfile << value.X << ";" << value.Y << ";" << value.Z << ";";
+	}
 }
 
-/*
-* Writes yaw, pitch and roll to file (in this order). Finishes with a tab stop.
-*/
-void FileWriter::writeToFile(const FRotator value)
+void FileWriter::WriteToFile(const FRotator value)
 {
-	if (bWrite)
-		Myfile << value.Yaw << ";" << value.Pitch << "," << value.Roll << ";";
+	FScopeLock Lock(&MyMutexWrite);
+{
+		if (bWrite)
+			Myfile << value.Yaw << ";" << value.Pitch << "," << value.Roll << ";";
+}
 }
 
-/*
-* Writes the complete state of an actor to file. Just for convenience.
-*/
-void FileWriter::writeToFile(const FString _name, const FVector _position, const FRotator _orientation)
+void FileWriter::WriteToFile(const FString _name, const FVector _position, const FRotator _orientation)
 {
 	if (bWrite)
 	{
 		writeTimestamp();
-		writeToFile("L");
-		writeToFile(_name);
-		writeToFile(_position);
-		writeToFile(_orientation);
-		writeNewLine();
+		WriteToFile("L");
+		WriteToFile(_name);
+		WriteToFile(_position);
+		WriteToFile(_orientation);
+		WriteNewLine();
 	}
 }
 
-/*
-* Writes the complete state of an actor to file. Just for convenience.
-*/
-void FileWriter::writeToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed)
+void FileWriter::WriteToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed)
 {
 
 	if (bWrite)
 	{
 		writeTimestamp();
-		writeToFile("L");
-		writeToFile(_position);
-		writeToFile(_orientation);
-		writeToFile(_forwardSpeed);
-		writeNewLine();
+		WriteToFile("L");
+		WriteToFile(_position);
+		WriteToFile(_orientation);
+		WriteToFile(_forwardSpeed);
+		WriteNewLine();
 	}
 }
 
-/*
-* Writes the complete state of an actor to file. Just for convenience.
-*/
-void FileWriter::writeToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed, const int _gear)
+void FileWriter::WriteToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed, const int _gear)
 {
 	if (bWrite)
 	{
 		writeTimestamp();
-		writeToFile("L");
-		writeToFile(_position);
-		writeToFile(_orientation);
-		writeToFile(_forwardSpeed);
-		writeToFile(_gear);
-		writeToFile(steer);
-		writeToFile(accelerate);
-		writeNewLine();
+		WriteToFile("L");
+		WriteToFile(_position);
+		WriteToFile(_orientation);
+		WriteToFile(_forwardSpeed);
+		WriteToFile(_gear);
+		WriteToFile(steer);
+		WriteToFile(accelerate);
+		WriteNewLine();
 	}
 }
 
-/*
-* Writes a new line into file. Best used after a single data set.
-*/
-void FileWriter::writeNewLine()
+void FileWriter::WriteNewLine()
 {
-	if (bWrite) Myfile << "\n";
+	FScopeLock Lock(&MyMutexWrite);
+	{
+		if (bWrite) 
+			Myfile << "\n";
+	}
 }
 
-/*
-* Toggles the variable @bWrite. Each user of FileWriter should invoke a check before writing something into the log file.
-*/
 void FileWriter::StartStopWriting()
 {
 	FString t = "FileWriter: ";
@@ -331,13 +308,13 @@ void FileWriter::StartStopWriting()
 	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
 }
 
-void FileWriter::startWriting()
+void FileWriter::StartWriting()
 {
 	bWrite = true;
 	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
 }
 
-void FileWriter::stopWriting()
+void FileWriter::StopWriting()
 {
 	bWrite = false;
 	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
@@ -350,6 +327,10 @@ int64 FileWriter::getTimestamp()
 
 void FileWriter::writeTimestamp()
 {
-	if (Myfile)
-		Myfile << getTimestamp() << ";";
+	FScopeLock Lock(&MyMutexWrite);
+
+	{
+		if (Myfile)
+			Myfile << getTimestamp() << ";";
+	}
 }

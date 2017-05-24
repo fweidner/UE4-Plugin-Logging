@@ -3,6 +3,8 @@
 #pragma once
 #include "Engine.h"
 
+#include "FileWriter.h"
+
 #include "LoggerBPLibrary.generated.h"
 
 /*
@@ -30,20 +32,49 @@ public:
 
 	GENERATED_UCLASS_BODY()
 
+	//It is essential to call this method first!
+	UFUNCTION(BlueprintCallable, Category = "Logger", meta = (DisplayName = "Test", Keywords = "Test"))
+		static void InitLogger();
+
 	UFUNCTION(BlueprintCallable, Category = "Logger", meta = (DisplayName = "Test", Keywords = "Test"))
 		static void Test();
 
-/*	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+	//Opens file. Does not start writing.
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void OpenFile();
+
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void SetPath(FString _path);
+
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void WriteString(const FString _string);
+
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void CloseFile();
+
+
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void WriteNewLine();
+
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void InitFile(FString _playerName = "Arwen Undomiel", FString _condition = "Rivendell");
+
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void StartWriting();
+
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+		static void StopWriting();
+
+	static FileWriter* f;
+/*
+	UFUNCTION(BlueprintCallable, Category = "FileWriter")
 		static void writeTriggerLCT(const FString _name);
 
 	UFUNCTION(BlueprintCallable, Category = "FileWriter")
 		static void closeFile();
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
-		static void setPath(FString _path);
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
-		static void openFile();
+
 
 	UFUNCTION(BlueprintCallable, Category = "FileWriter")
 		static void writeLaneLCT(const FString _lane);
