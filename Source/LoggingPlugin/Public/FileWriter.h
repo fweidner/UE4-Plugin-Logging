@@ -1,15 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include <fstream>		// ofstream
 #include <Misc/DateTime.h> // get time and date for filename
 #include <atomic>
 
+#include "Engine.h"
+
+
 /**
  * FileWriter holding the functionality for later analysis. Implemented as a Singleton element in order to guarantee a single point of logging. Primary purpose is the logging of position and orientation of actors. Therefore, all other (moving) actors should inherit from this class.
  */
-class CAR2SIMULATE_API FileWriter 
+class LOGGINGPLUGIN_API FileWriter
 {
 public:
 	static FileWriter* Singleton();
@@ -54,8 +56,8 @@ private:
 	int64 getTimestamp();
 
 
-	FileWriter();													// private so no one can access it
-	FileWriter(FileWriter const&){};								// copy constructor is private
+	FileWriter();														// private so no one can access it
+	FileWriter(FileWriter const&){};									// copy constructor is private
 	FileWriter& operator=(FileWriter const&){ return *s_instance; };	// assignment operator is private
 	~FileWriter();
 

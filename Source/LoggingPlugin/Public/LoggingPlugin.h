@@ -4,6 +4,9 @@
 
 #include "ModuleManager.h"
 
+DEFINE_LOG_CATEGORY_STATIC(Car2IXSLog, Log, All)
+
+
 class FLoggingPluginModule : public IModuleInterface
 {
 public:

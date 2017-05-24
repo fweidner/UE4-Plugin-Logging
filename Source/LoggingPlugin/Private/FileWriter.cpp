@@ -1,11 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "LoggingPlugin.h"
 
-#include "ds_02.h"
 #include "FileWriter.h"
 #include <string>
-#include "FileReader.h"
 #include "iostream"
-#include "ds_02GameMode.h"
+
 
 
 FileWriter* FileWriter::s_instance = NULL;
@@ -57,12 +56,12 @@ void FileWriter::openFile()
 
 	if (isFileOpen(&Myfile)) //first check
 	{
-		UE_LOG(C2SLog, Log, TEXT("Successfully Set up File Writer. %s"), *filenameString);
+		UE_LOG(Car2IXSLog, Log, TEXT("Successfully Set up File Writer. %s"), *filenameString);
 		return;
 	}
 	else
 	{
-		UE_LOG(C2SLog, Warning, TEXT("Could not open file. I'm gonna check the directory."));
+		UE_LOG(Car2IXSLog, Warning, TEXT("Could not open file. I'm gonna check the directory."));
 		if (!doesLoggingDirectoryExist(logdir)) //does log dir exist?
 		{
 			createDirectory(FPaths::GameDir() + logdir);  //create log dir
@@ -71,12 +70,12 @@ void FileWriter::openFile()
 
 	if (isFileOpen(&Myfile)) //second check
 	{
-		UE_LOG(C2SLog, Log, TEXT("Successfully Set up FileWriter (second try). %s"), *filenameString);
+		UE_LOG(Car2IXSLog, Log, TEXT("Successfully Set up FileWriter (second try). %s"), *filenameString);
 		return;
 	}
 	else
 	{
-		UE_LOG(C2SLog, Warning, TEXT("Could not open file. Tryimg default dir (game path)"));
+		UE_LOG(Car2IXSLog, Warning, TEXT("Could not open file. Tryimg default dir (game path)"));
 		filenameString = gamedir + date + extension; //putting log file in gamedir
 		char* newFilename = TCHAR_TO_UTF8(*filenameString);
 		Myfile.open(newFilename);
@@ -84,12 +83,12 @@ void FileWriter::openFile()
 
 	if (isFileOpen(&Myfile)) //third try
 	{
-		UE_LOG(C2SLog, Log, TEXT("Successfully Set up FileWriter (third try) \\o/. %s"), *(gamedir + date + extension));
+		UE_LOG(Car2IXSLog, Log, TEXT("Successfully Set up FileWriter (third try) \\o/. %s"), *(gamedir + date + extension));
 		return;
 	}
 	else
 	{
-		UE_LOG(C2SLog, Fatal, TEXT("Could not open file. I'm useless :("));
+		UE_LOG(Car2IXSLog, Fatal, TEXT("Could not open file. I'm useless :("));
 	}
 }
 
@@ -184,7 +183,7 @@ void FileWriter::closeFile()
 
 		writeToFile("Fin. " + date + ". Have a good day.");
 		Myfile.close();
-		UE_LOG(C2SLog, Log, TEXT("Closed file."));
+		UE_LOG(Car2IXSLog, Log, TEXT("Closed file."));
 	}
 	else if (FileWriter::RefCount > 0)
 	{
@@ -198,7 +197,7 @@ void FileWriter::closeFile()
 
 FileWriter::~FileWriter()
 {
-	UE_LOG(C2SLog, Log, TEXT("Shutting down file writer: %d actors."), FileWriter::RefCount);
+	UE_LOG(Car2IXSLog, Log, TEXT("Shutting down file writer: %d actors."), FileWriter::RefCount);
 	closeFile();
 }
 
@@ -329,19 +328,19 @@ void FileWriter::StartStopWriting()
 		t = t + "on.";
 	}
 
-	UE_LOG(C2SLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
 }
 
 void FileWriter::startWriting()
 {
 	bWrite = true;
-	UE_LOG(C2SLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
 }
 
 void FileWriter::stopWriting()
 {
 	bWrite = false;
-	UE_LOG(C2SLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
 }
 
 int64 FileWriter::getTimestamp()

@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "Helper/FileWriter.h"
+
+#include "FileWriter.h"
 
 #include "Object.h"
 #include "FileWriterProxy.generated.h"
@@ -12,7 +13,7 @@
  * 
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class CAR2SIMULATE_API UFileWriterProxy : public USceneComponent
+class LOGGINGPLUGIN_API UFileWriterProxy : public USceneComponent
 {
 	GENERATED_BODY()
 
@@ -33,7 +34,7 @@ public:
 			void writeTriggerLCT(const FString _name);
 		
 		UFUNCTION(BlueprintCallable, Category = "FileWriter")
-		void closeFile();
+			void closeFile();
 
 		UFUNCTION(BlueprintCallable, Category = "FileWriter")
 			void setPath(FString _path);
@@ -45,7 +46,7 @@ public:
 			void writeLaneLCT(const FString _lane);
 
 		UFUNCTION(BlueprintCallable, Category = "FileWriter")
-		void startWriting();
+			void startWriting();
 
 		UFUNCTION(BlueprintCallable, Category = "FileWriter")
 			void stopWriting();

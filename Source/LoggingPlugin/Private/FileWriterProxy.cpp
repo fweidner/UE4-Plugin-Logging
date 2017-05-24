@@ -1,6 +1,7 @@
 // like... do what you want?! (But do not infring the EpicGames copyright notes)
 
-#include "ds_02.h"
+#include "LoggingPlugin.h"
+
 #include "FileWriterProxy.h"
 
 int32 UFileWriterProxy::index = 0;
