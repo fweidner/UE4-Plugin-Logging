@@ -68,7 +68,7 @@ void ULoggerBPLibrary::WriteNewLine()
 void ULoggerBPLibrary::InitFile(FString Comment1, FString Comment2, FString _playerName, FString _condition)
 {
 	if(f)
-		f->InitFile(_playerName, _condition);
+		f->InitFile(Comment1,  Comment2, _playerName, _condition);
 }
 
 void ULoggerBPLibrary::StartWriting()
