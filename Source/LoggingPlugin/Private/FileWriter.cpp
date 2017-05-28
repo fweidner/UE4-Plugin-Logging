@@ -5,37 +5,38 @@
 #include <string>
 #include "iostream"
 
+#include <chrono>
+
 
 
 FileWriter* FileWriter::s_instance = NULL;
-int FileWriter::RefCount = 0;
 
 
 FileWriter* FileWriter::Singleton() {
-	FileWriter::RefCount += 1;
 	if (!s_instance)
+	{
 		s_instance = new FileWriter();
-
+	}
 	return s_instance;
 }
 
-/*
-* Private constructor for the FileWriter. Sets @bWrite to false and opens (prepares) a file via @openFile().
-*/
+
 FileWriter::FileWriter()
 {
-	//setup write mode for actor
-	bWrite = false;
-	openFile();
-	//	initFile();
 
 }
 
 /*
 * Opens a file named after the current time and date. Location is currently fixed to the location of the engine binary.
 */
-void FileWriter::openFile()
+void FileWriter::openFile(bool bStartWriting /*= true*/)
 {
+	if (bIsFileOpen)
+	{
+		UE_LOG(Car2IXSLog, Log, TEXT("There is already an open file!"));
+		return;
+	}
+
 	FString logdir = "Custom/Log/";
 	FString gamedir = FPaths::GameDir();
 
@@ -57,20 +58,35 @@ void FileWriter::openFile()
 	if (isFileOpen(&Myfile)) //first check
 	{
 		UE_LOG(Car2IXSLog, Log, TEXT("Successfully Set up File Writer. %s"), *filenameString);
+
+		if (bStartWriting)
+			StartWriting();
+
+		bIsFileOpen = true;
+
 		return;
 	}
 	else
 	{
 		UE_LOG(Car2IXSLog, Warning, TEXT("Could not open file. I'm gonna check the directory."));
+
 		if (!doesLoggingDirectoryExist(logdir)) //does log dir exist?
 		{
 			createDirectory(FPaths::GameDir() + logdir);  //create log dir
 		}
 	}
 
+	Myfile.open(filename);
+
 	if (isFileOpen(&Myfile)) //second check
 	{
+
 		UE_LOG(Car2IXSLog, Log, TEXT("Successfully Set up FileWriter (second try). %s"), *filenameString);
+
+		if (bStartWriting)
+			StartWriting();
+
+		bIsFileOpen = true;
 		return;
 	}
 	else
@@ -78,11 +94,18 @@ void FileWriter::openFile()
 		UE_LOG(Car2IXSLog, Warning, TEXT("Could not open file. Tryimg default dir (game path)"));
 		filenameString = gamedir + date + extension; //putting log file in gamedir
 		char* newFilename = TCHAR_TO_UTF8(*filenameString);
+
 		Myfile.open(newFilename);
+
+		if (bStartWriting)
+			StartWriting();
+
+		bIsFileOpen = true;
 	}
 
 	if (isFileOpen(&Myfile)) //third try
 	{
+	
 		UE_LOG(Car2IXSLog, Log, TEXT("Successfully Set up FileWriter (third try) \\o/. %s"), *(gamedir + date + extension));
 		return;
 	}
@@ -97,29 +120,36 @@ void FileWriter::SetPath(FString _path)
 	Path = _path;
 }
 
-void FileWriter::SetPlayerName(const FString _name)
+void FileWriter::setPlayerName(const FString _name)
 {
 	PlayerName = _name;
 
 }
 
-void FileWriter::SetEnvironment(const FString _env)
+void FileWriter::setEnvironment(const FString _env)
 {
 	Environment = _env;
 }
 
 void FileWriter::InitFile(FString _playerName, FString _condition)
 {
+
+	if (bIsInitialized)
+	{
+		UE_LOG(Car2IXSLog, Log, TEXT("I have already been initialized!"));
+		return;
+	}
+
 	WriteToFile("Mae govannen.");
 	WriteNewLine();
 	WriteToFile("I'm a log.");
 	WriteNewLine();
 	WriteToFile("Here are some meta information about this session: ");
 	WriteNewLine();
-	PlayerName = _playerName;
+	setPlayerName(_playerName);
 	WriteToFile("Name: " + PlayerName);
 	WriteNewLine();
-	Environment = _condition;
+	setEnvironment(_condition);
 	WriteToFile("Environment: " + Environment);
 	WriteNewLine();
 	FString date = FDateTime::Now().ToString();
@@ -130,6 +160,14 @@ void FileWriter::InitFile(FString _playerName, FString _condition)
 	WriteToFile("Live long, and prosper.");
 	WriteNewLine();
 	WriteNewLine();
+
+	bIsInitialized = true;
+}
+
+
+void FileWriter::SetDebugMessages(bool _newValue)
+{
+	bIsDebugMode = _newValue;
 }
 
 bool FileWriter::doesLoggingDirectoryExist(const FString _pathToCheck) const
@@ -154,20 +192,27 @@ void FileWriter::createDirectory(FString _path)
 */
 void FileWriter::closeFile()
 {
-	RefCount -= 1;
-
-	if (FileWriter::RefCount == 0)
+	if (!isFileOpen(&Myfile))
 	{
-		WriteNewLine();
-		WriteToFile("Live long and prosper!");
-		WriteNewLine();
-
-		FString date = FDateTime::Now().ToString();
-
-		WriteToFile("Fin. " + date + ". Have a good day.");
-		Myfile.close();
-		UE_LOG(Car2IXSLog, Log, TEXT("Closed file."));
+		UE_LOG(Car2IXSLog, Log, TEXT("There is no open file!"));
+		return;
 	}
+
+
+	WriteNewLine();
+	WriteToFile("Live long and prosper!");
+	WriteNewLine();
+
+	FString date = FDateTime::Now().ToString();
+
+	WriteToFile("Fin. " + date + ". Have a good day.");
+	Myfile.close();
+	UE_LOG(Car2IXSLog, Log, TEXT("Closed file."));
+
+	bIsInitialized = false;
+	bIsFileOpen = false;
+
+	/*
 	else if (FileWriter::RefCount > 0)
 	{
 		UE_LOG(Car2IXSLog, Log, TEXT("File still used by %d actors."), FileWriter::RefCount);
@@ -176,30 +221,54 @@ void FileWriter::closeFile()
 	{
 		UE_LOG(Car2IXSLog, Log, TEXT("Something is really really wrong: %d actors."), FileWriter::RefCount);
 	}
+*/
 }
 
 FileWriter::~FileWriter()
 {
-	UE_LOG(Car2IXSLog, Log, TEXT("Shutting down file writer: %d actors."), FileWriter::RefCount);
 	closeFile();
 }
 
 void FileWriter::WriteToFile(const FString _value)
 {
+
 	FScopeLock Lock(&MyMutexWrite);
 	{
-
-		if (bWrite)
-			Myfile << std::string(TCHAR_TO_UTF8(*_value)).c_str() << ";";
+		if (bWrite) {
+			if (bIsDebugMode)
+				UE_LOG(Car2IXSLog, Log, TEXT("WriteToFile: %s ; (%s)"), *_value, bWrite ? TEXT("True") : TEXT("False"));
+			Myfile << std::string(TCHAR_TO_UTF8(*_value)).c_str() << getDelimiter();
+		}
 	}
 }
+
+
+void FileWriter::WriteToFile(const FString _value, bool _addTimestamp, bool _addNewline)
+{
+
+	if (bWrite)
+	{
+		if (bIsDebugMode)
+			UE_LOG(Car2IXSLog, Log, TEXT("WriteToFile: %s ; (%s)"), *_value, bWrite ? TEXT("True") : TEXT("False"));
+
+		if(_addTimestamp)
+			WriteTimestamp();
+
+		WriteToFile(_value);
+
+		if (_addNewline)
+			WriteNewLine();
+	}
+}
+
+
 
 void FileWriter::WriteToFile(const float _value)
 {
 	FScopeLock Lock(&MyMutexWrite);
 	{
 		if (bWrite)
-			Myfile << std::to_string(_value) << ";";
+			Myfile << std::to_string(_value) << getDelimiter();
 	}
 }
 
@@ -208,7 +277,7 @@ void FileWriter::WriteToFile(const int _value)
 	FScopeLock Lock(&MyMutexWrite);
 	{
 		if (bWrite)
-			Myfile << std::to_string(_value) << ";";
+			Myfile << std::to_string(_value) << getDelimiter();
 	}
 }
 
@@ -217,7 +286,11 @@ void FileWriter::WriteToFile(const float a, const float b, const float c, const 
 	FScopeLock Lock(&MyMutexWrite);
 	{
 		if (bWrite)
-			Myfile << a << ";" << b << ";" << c << ";" << d << ";";
+			Myfile 
+			<< a << getDelimiter()
+			<< b << getDelimiter()
+			<< c << getDelimiter() 
+			<< d << getDelimiter();
 	}
 }
 
@@ -226,43 +299,22 @@ void FileWriter::WriteToFile(const FVector value)
 	FScopeLock Lock(&MyMutexWrite);
 	{
 		if (bWrite)
-			Myfile << value.X << ";" << value.Y << ";" << value.Z << ";";
+			Myfile 
+			<< value.X << getDelimiter()
+			<< value.Y << getDelimiter() 
+			<< value.Z << getDelimiter() ;
 	}
 }
 
 void FileWriter::WriteToFile(const FRotator value)
 {
 	FScopeLock Lock(&MyMutexWrite);
-{
+	{
 		if (bWrite)
-			Myfile << value.Yaw << ";" << value.Pitch << "," << value.Roll << ";";
-}
-}
-
-void FileWriter::WriteToFile(const FString _name, const FVector _position, const FRotator _orientation)
-{
-	if (bWrite)
-	{
-		writeTimestamp();
-		WriteToFile("L");
-		WriteToFile(_name);
-		WriteToFile(_position);
-		WriteToFile(_orientation);
-		WriteNewLine();
-	}
-}
-
-void FileWriter::WriteToFile(const FString _name, const FVector _position, const FRotator _orientation, const float _forwardSpeed)
-{
-
-	if (bWrite)
-	{
-		writeTimestamp();
-		WriteToFile("L");
-		WriteToFile(_position);
-		WriteToFile(_orientation);
-		WriteToFile(_forwardSpeed);
-		WriteNewLine();
+			Myfile 
+			<< value.Yaw << getDelimiter()
+			<< value.Pitch << getDelimiter() 
+			<< value.Roll << getDelimiter() ;
 	}
 }
 
@@ -270,14 +322,12 @@ void FileWriter::WriteToFile(const FString _name, const FVector _position, const
 {
 	if (bWrite)
 	{
-		writeTimestamp();
+		WriteTimestamp();
 		WriteToFile("L");
 		WriteToFile(_position);
 		WriteToFile(_orientation);
 		WriteToFile(_forwardSpeed);
 		WriteToFile(_gear);
-		WriteToFile(steer);
-		WriteToFile(accelerate);
 		WriteNewLine();
 	}
 }
@@ -286,7 +336,7 @@ void FileWriter::WriteNewLine()
 {
 	FScopeLock Lock(&MyMutexWrite);
 	{
-		if (bWrite) 
+		if (bWrite)
 			Myfile << "\n";
 	}
 }
@@ -305,32 +355,37 @@ void FileWriter::StartStopWriting()
 		t = t + "on.";
 	}
 
-	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
 }
 
 void FileWriter::StartWriting()
 {
 	bWrite = true;
-	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
 }
 
 void FileWriter::StopWriting()
 {
 	bWrite = false;
-	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %d"), bWrite);
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
 }
 
 int64 FileWriter::getTimestamp()
 {
-	return FDateTime::Now().ToUnixTimestamp();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-void FileWriter::writeTimestamp()
+void FileWriter::WriteTimestamp()
 {
 	FScopeLock Lock(&MyMutexWrite);
-
 	{
-		if (Myfile)
+		if (bWrite)
 			Myfile << getTimestamp() << ";";
+			//Myfile << std::string(TCHAR_TO_UTF8(*getTimestamp2())).c_str()
 	}
+}
+
+std::string FileWriter::getDelimiter()
+{
+	return std::string(TCHAR_TO_UTF8(*Delimiter)).c_str();
 }

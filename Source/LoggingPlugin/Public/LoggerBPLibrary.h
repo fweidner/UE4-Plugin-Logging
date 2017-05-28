@@ -33,37 +33,43 @@ public:
 	GENERATED_UCLASS_BODY()
 
 	//It is essential to call this method first!
-	UFUNCTION(BlueprintCallable, Category = "Logger", meta = (DisplayName = "Test", Keywords = "Test"))
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void InitLogger();
 
-	UFUNCTION(BlueprintCallable, Category = "Logger", meta = (DisplayName = "Test", Keywords = "Test"))
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void Test();
 
 	//Opens file. Does not start writing.
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
-		static void OpenFile();
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
+		static void OpenFile(bool bStartWriting = true);
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void SetPath(FString _path);
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
-		static void WriteString(const FString _string);
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
+		static void WriteString(const FString _string, bool _addTimestamp, bool _addNewLine);
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void CloseFile();
 
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void WriteNewLine();
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void InitFile(FString _playerName = "Arwen Undomiel", FString _condition = "Rivendell");
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void StartWriting();
 
-	UFUNCTION(BlueprintCallable, Category = "FileWriter")
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void StopWriting();
+
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
+		static void WriteTimestamp();
+
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
+	static void SetDebugMessages(bool _newVal);
 
 	static FileWriter* f;
 /*

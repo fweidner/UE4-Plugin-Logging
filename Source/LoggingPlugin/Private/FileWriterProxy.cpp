@@ -82,7 +82,7 @@ void UFileWriterProxy::writeLaneLCT(const FString _lane)
 void UFileWriterProxy::writeDefaultString(const FString _string)
 {
 	if (!f) return;
-	f->writeTimestamp();
+	f->WriteTimestamp();
 	f->WriteToFile(_string);
 	f->WriteNewLine();
 }
