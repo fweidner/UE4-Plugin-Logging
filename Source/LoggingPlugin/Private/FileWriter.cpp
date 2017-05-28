@@ -355,13 +355,13 @@ void FileWriter::StartStopWriting()
 		t = t + "on.";
 	}
 
-	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter StartStopWriting. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
 }
 
 void FileWriter::StartWriting()
 {
 	bWrite = true;
-	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
+	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter StartWriting. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
 }
 
 void FileWriter::StopWriting()
