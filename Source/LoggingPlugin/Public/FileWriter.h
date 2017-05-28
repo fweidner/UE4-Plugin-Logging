@@ -17,7 +17,6 @@ class LOGGINGPLUGIN_API FileWriter
 public:
 	static FileWriter* Singleton();
 
-	void StartStopWriting();
 	void openFile(bool bStartWriting = true);
 	void closeFile();
 
@@ -96,8 +95,7 @@ public:
 	@param _playerName	Name of the current player/participant.
 	@param _condition	Name of the current experiment condition.
 	*/
-
-	void InitFile(FString _playerName = "Galadriel", FString _condition = "Lothlorien"); //use only after  player name and enviornment/condition is set.
+	void InitFile(FString _comment1 = "Level", FString _comment2 = "Explanation", FString _playerName = "Galadriel", FString _condition = "Lothlorien"); //use only after  player name and enviornment/condition is set.
 
 
 	/*

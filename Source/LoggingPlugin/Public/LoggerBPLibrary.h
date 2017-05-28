@@ -57,7 +57,7 @@ public:
 		static void WriteNewLine();
 
 	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
-		static void InitFile(FString _playerName = "Arwen Undomiel", FString _condition = "Rivendell");
+		static void InitFile(FString Comment1 = "Level", FString Comment2 ="Explanation", FString _playerName = "Arwen Undomiel", FString _condition = "Rivendell");
 
 	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void StartWriting();

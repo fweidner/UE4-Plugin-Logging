@@ -31,7 +31,7 @@ void ULoggerBPLibrary::OpenFile(bool bStartWriting /*= true*/)
 	
 	if (f)
 	{
-		f->openFile();
+		f->openFile(bStartWriting);
 	}
 
 }
@@ -65,7 +65,7 @@ void ULoggerBPLibrary::WriteNewLine()
 		f->WriteNewLine();
 }
 
-void ULoggerBPLibrary::InitFile(FString _playerName, FString _condition)
+void ULoggerBPLibrary::InitFile(FString Comment1, FString Comment2, FString _playerName, FString _condition)
 {
 	if(f)
 		f->InitFile(_playerName, _condition);

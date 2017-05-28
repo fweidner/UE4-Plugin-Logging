@@ -131,7 +131,7 @@ void FileWriter::setEnvironment(const FString _env)
 	Environment = _env;
 }
 
-void FileWriter::InitFile(FString _playerName, FString _condition)
+void FileWriter::InitFile(FString _comment1, FString _comment2, FString _playerName, FString _condition)
 {
 
 	if (bIsInitialized)
@@ -139,6 +139,7 @@ void FileWriter::InitFile(FString _playerName, FString _condition)
 		UE_LOG(Car2IXSLog, Log, TEXT("I have already been initialized!"));
 		return;
 	}
+	StartWriting();
 
 	WriteToFile("Mae govannen.");
 	WriteNewLine();
@@ -152,6 +153,10 @@ void FileWriter::InitFile(FString _playerName, FString _condition)
 	setEnvironment(_condition);
 	WriteToFile("Environment: " + Environment);
 	WriteNewLine();
+	WriteToFile("Comment1: " + _comment1);
+	WriteNewLine();
+	WriteToFile("Comment2: " + _comment2);
+	WriteNewLine();
 	FString date = FDateTime::Now().ToString();
 	WriteToFile("Now: " + date + ". Have a good day.");
 
@@ -161,6 +166,8 @@ void FileWriter::InitFile(FString _playerName, FString _condition)
 	WriteNewLine();
 	WriteNewLine();
 
+
+	StopWriting();
 	bIsInitialized = true;
 }
 
@@ -339,23 +346,6 @@ void FileWriter::WriteNewLine()
 		if (bWrite)
 			Myfile << "\n";
 	}
-}
-
-void FileWriter::StartStopWriting()
-{
-	FString t = "FileWriter: ";
-	if (bWrite)
-	{
-		bWrite = false;
-		t = t + "off.";
-	}
-	else
-	{
-		bWrite = true;
-		t = t + "on.";
-	}
-
-	UE_LOG(Car2IXSLog, Log, TEXT("Toggled FileWriter StartStopWriting. New Value: %s"), bWrite ? TEXT("True") : TEXT("False"));
 }
 
 void FileWriter::StartWriting()
