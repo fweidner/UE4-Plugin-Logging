@@ -4,7 +4,7 @@ using UnrealBuildTool;
 
 public class LoggingPlugin : ModuleRules
 {
-	public LoggingPlugin(TargetInfo Target)
+	public LoggingPlugin(ReadOnlyTargetRules Target) : base (Target)
 	{
 		
 		PublicIncludePaths.AddRange(
