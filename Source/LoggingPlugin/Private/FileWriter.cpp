@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#include "FileWriter.h"
+
 #include "LoggingPlugin.h"
 
-#include "FileWriter.h"
 #include <string>
 #include "iostream"
 
