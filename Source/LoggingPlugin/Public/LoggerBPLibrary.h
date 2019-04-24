@@ -50,6 +50,9 @@ public:
 		static void WriteString(const FString _string, bool _addTimestamp, bool _addNewLine);
 
 	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
+		static void WriteStringEvent(const FString _string, bool _addTimestamp, bool _addNewLine);
+
+	UFUNCTION(BlueprintCallable, Category = "Car2IXS|Logging")
 		static void CloseFile();
 
 

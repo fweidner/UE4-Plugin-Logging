@@ -55,6 +55,12 @@ void ULoggerBPLibrary::WriteString(const FString _string, bool _addTimestamp, bo
 		f->WriteToFile(_string, _addTimestamp, _addNewLine);
 }
 
+void ULoggerBPLibrary::WriteStringEvent(const FString _string, bool _addTimestamp, bool _addNewLine)
+{
+	if (f)
+		f->WriteToFileEv(_string, _addTimestamp, _addNewLine);
+}
+
 void ULoggerBPLibrary::CloseFile()
 {
 	if (f)

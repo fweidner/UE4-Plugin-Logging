@@ -269,7 +269,25 @@ void FileWriter::WriteToFile(const FString _value, bool _addTimestamp, bool _add
 	}
 }
 
+void FileWriter::WriteToFileEv(const FString _value, bool _addTimestamp, bool _addNewline)
+{
 
+	if (bWrite)
+	{
+		if (bIsDebugMode)
+			UE_LOG(Car2IXSLog, Log, TEXT("WriteToFile: %s ; (%s)"), *_value, bWrite ? TEXT("True") : TEXT("False"));
+
+		if (_addTimestamp)
+			WriteTimestamp();
+
+		WriteToFile("Event");
+
+		WriteToFile(_value);
+
+		if (_addNewline)
+			WriteNewLine();
+	}
+}
 
 void FileWriter::WriteToFile(const float _value)
 {

@@ -37,6 +37,12 @@ public:
 	void WriteToFile(const FString _value, bool _addTimestamp, bool _addNewLine);
 
 	/*
+	Writes a string to the file. Puts "Event" in front of _value. Writes a timestamp in front of the string if _addTimestamp is true.
+	Adds a new line if _addNewLine is true. Is not locked.
+	*/
+	void WriteToFileEv(const FString _value, bool _addTimestamp, bool _addNewline);
+
+	/*
 	Writes a integer to the file. No new line. Ends with a delimiter. Is locked.
 	*/
 	void WriteToFile(const int _value);
