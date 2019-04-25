@@ -10,7 +10,6 @@ public class LoggingPlugin : ModuleRules
 
         PublicIncludePaths.AddRange(
 			new string[] {
-				"LoggingPlugin/Public"
 				// ... add public include paths required here ...
 			}
 			);

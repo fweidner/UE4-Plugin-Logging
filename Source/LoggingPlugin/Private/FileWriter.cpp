@@ -39,7 +39,7 @@ void FileWriter::openFile(bool bStartWriting /*= true*/)
 	}
 
 	FString logdir = "Custom/Log/";
-	FString gamedir = FPaths::GameDir();
+	FString gamedir = FPaths::ProjectDir();
 
 	Path = gamedir + logdir;
 
@@ -73,7 +73,7 @@ void FileWriter::openFile(bool bStartWriting /*= true*/)
 
 		if (!doesLoggingDirectoryExist(logdir)) //does log dir exist?
 		{
-			createDirectory(FPaths::GameDir() + logdir);  //create log dir
+			createDirectory(FPaths::ProjectDir() + logdir);  //create log dir
 		}
 	}
 
